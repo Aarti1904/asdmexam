@@ -1,29 +1,33 @@
-const http = require("http");
-const url = require("url");
-const querystring = require("querystring");
-const fs = require("fs");
-var processRequest = (req,resp) => {
-const p = url.parse(req.url);
-switch(p.pathname)
-{
-  case "/":
-fs.readFile("index.html",(err,data)=>{
-if(err)
-{
-console.log("failed to load");
-}
-else{
-resp.end(data);
-}
-});
-break;
-case "/validate":
-const q = querystring.parse(p.query);
-resp.end(q.name+" login successfully");
+let express = require('express');
+let app = express();
+let bodyparser = require('body-parser');
 
-break;
+app.use(bodyparser.urlencoded({extended: false}));
+
+let logger = function(req, resp, next){
+    console.log(req.url);
+    console.log(req.method);
+
+    next();
 }
+
+let sayhello = (req, resp) => {
+    resp.send("HEllo world");
 }
-const server = http.createServer(processRequest);
-server.listen(7070);
-console.log("server started");
+
+let saynamaste = (req, resp) => {
+    resp.send("Namaste India");
+}
+
+let wish = (req, resp) => {
+    resp.send("Wishing you all a very successful ASDM exam .. 👍🏽👍🏽👍🏽🌞🔆");
+}
+
+app.use(logger);
+app.use('/namaste', saynamaste);
+app.use('/wish', wish);
+app.use('/', sayhello);
+
+app.listen(8081, () => {
+    console.log('Server is started on 8081')
+})
